@@ -1,5 +1,18 @@
 # CI/CD pipeline project
 
+## these steps are for Ubuntu 18.0
+```
+sudo apt-get update
+sudo apt-get remove docker docker-engine docker.io
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+docker --version
+sudo usermod -a -G docker ubuntu
+```
+
+## Below steps are for Linux
+
 ### Step 1 : Install Jenkins
 follow [Jenkins installation here](https://github.com/yogmangela/jenkins)
 

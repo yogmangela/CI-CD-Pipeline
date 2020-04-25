@@ -46,6 +46,18 @@ sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
 ```
 
+OR
+
+```
+sudo apt-get update
+sudo apt-get remove docker docker-engine docker.io
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+docker --version
+sudo usermod -a -G docker ubuntu
+```
+
 # Step 2: Install Docker in Deployment server.
 
 ## Step 2.1 Install only Dockere  here:
