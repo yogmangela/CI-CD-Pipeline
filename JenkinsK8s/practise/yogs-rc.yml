@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: yogs
+spec:
+  replicas: 3
+  selector:
+        matchLabels:
+                name: yogs
+  template:
+    metadata:
+      labels:
+        name: yogs
+        app: yogs
+        version: "2"
+    spec:
+      containers:
+      - name: yogs
+        image: "gcr.io/kuar-demo/kuard-amd64:green"

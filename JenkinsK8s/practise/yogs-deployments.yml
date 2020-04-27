@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: yogs
+  template:
+    metadata:
+      labels:
+        run: yogs
+    spec:
+      containers:
+      - name: yogs
+        image: "gcr.io/kuar-demo/kuard-amd64:green"

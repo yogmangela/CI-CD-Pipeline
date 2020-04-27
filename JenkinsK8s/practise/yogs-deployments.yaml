@@ -1,0 +1,24 @@
+    operation: Update
+    time: "2020-04-26T11:41:20Z"
+  name: yogs
+  selfLink: /apis/apps/v1/namespaces/default/deployments/yogs
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      run: yogs
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: yogs
+    spec:
+      containers:
+                                                                                                               98,1          86%
