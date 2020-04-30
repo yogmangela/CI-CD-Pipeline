@@ -1,5 +1,5 @@
 # Jenkins and Docker CI/CD pipeline
-![Docker application running](images/docker-logo.png)
+![Jenkins logo](images/jenkins.png)![Docker logo](images/docker-logo.png)
 # Create two instances
  - 1. for CI/CD pipeline - Jenkins
  - 2. for Deployment server - Docker
