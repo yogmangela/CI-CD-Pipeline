@@ -1,7 +1,7 @@
 # Jenkins and Docker CI/CD pipeline
 # Create two instances
- - 1. for CI/CD pipeline
- - 2. for Deployment server
+ - 1. for CI/CD pipeline - Jenkins
+ - 2. for Deployment server - Docker
 # Step 1: install Jenkins, Docker in CI/CD server.
 
 # Step 1.1: Install java openjdk-8
@@ -46,33 +46,21 @@ sudo usermod -aG docker jenkins
 sudo systemctl restart jenkins
 ```
 
-OR
-
-```
-sudo apt-get update
-sudo apt-get remove docker docker-engine docker.io
-sudo apt install docker.io
-sudo systemctl start docker
-sudo systemctl enable docker
-docker --version
-sudo usermod -a -G docker ubuntu
-```
-
 # Step 2: Install Docker in Deployment server.
 
-## Step 2.1 Install only Dockere  here:
+## Step 2.1 Install only Docker here:
 
 ```
 sudo apt update
 sudo apt install docker.io -y
-sudo apt -aG docker ubuntu
+sudo usermod -aG docker ubuntu
 ```
 
 # Step 3: Create Jenkins Pipeline job to build and deploy docker image in Docker(Deployment) Server. 
 
 ## Step 3.1: Create a jenkins job Pipeline script
 
-- add belwo to pipeline script
+- add beloo to pipeline script
 ```
  node{
     stage("Git clone"){
@@ -80,20 +68,39 @@ sudo apt -aG docker ubuntu
     }
 ```
 ## Step 3.2: Maven clean package
-- use global tool configuration >> add Maven
+- ``Add Maven >>Jenkins>>Manage jenkins>> global tool configuration >> add Maven version >> Copy the ID``
 
 go to script add below stage:
 ```
-stage("Maven Clean Package){
-    def mavenHome tool name: "Maven",type:"maven"
-    sh "${mavenHome}/bin/mvn clean package"
+ node{
+    stage("Git clone"){
+        git url: 'https://github.com/MithunTechnologiesDevOps/java-web-app-docker.git', branch:'master'
+    }
+    stage("Maven Clean Package){
+        def mavenHome tool name: "Maven_3.6.3",type:"maven"
+        sh "${mavenHome}/bin/mvn clean package"
+    }
 }
+
 ```
 ## Step 3.2: Docker image with code and neccessaary software. (tomcat, weblogic etc)
 - add one more stage
 ```
-stage("Build Docker Image"){
-    sh "docker build -t yogmicroservices/java-web-app-docker:${buildNumber} ."
+ node{
+    def buildNumber = BUILD_NUMBER
+    stage("Git clone"){
+        git url: 'https://github.com/MithunTechnologiesDevOps/java-web-app-docker.git', branch:'master'
+    }
+    stage("Maven Clean Package){
+        def mavenHome tool name: "Maven_3.6.3",type:"maven"
+        sh "${mavenHome}/bin/mvn clean package"
+    }
+    stage("Docker login and Push"){
+        withCredentials([string(credentialsId: 'DOCKER_HUB_PWD', variable: 'DOCKER_HUB_PWD')]) {
+            sh "docker login -u yogmicroservices -p ${DOCKER_HUB_PWD}" 
+        }
+            sh "docker push yogmicroservices/java-web-app-docker:${buildNumber}"
+    }
 }
 ```
 - add envirounment variable before stage1
@@ -132,10 +139,10 @@ stage("Docker login and Push"){
 - now click ``apply & save``
 
 # Step 4: Deploy docker images to Deployment server
-note: on Deployment server we only have Docker installed.
+note: on Deployment server we only need to install Docker.
 
 ## Step 4.1 on Jenkins master server
-- Add "SSH Agent' pluging >> Click install without restart. It's best to restart.
+- Add "SSH Agent' pluging under Available tab >> Click install without restart. It's best to restart.
 
 under ``pipeline script snippet``
 
@@ -162,8 +169,30 @@ stage("Deploy Application on Deployment server"){
     sh "-o StrictHostKeyChecking=no ubuntu@<<private-ip-of-deployment-server>> docker run -d -p 8080:8080 --name web_container yogmicroservices/java-web-app-docker:${buildNumber}"
 }
 ```
-Save and Apply >>
+- This is how may Docker SSH looks like:
+```
+stage("Deploy Application")
+    sshagent(['DOCKER_DEV_SSH']) {
+        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.2.26 docker rm  -f javawebapp || true"
+        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.2.26 docker run -d -p 8080:8080 --name javawebapp yogmicroservices/java-web-app-docker:${buildNumber}" 
+        
+    }
+```
 
-Build job
+Save and Apply >> Build job
 
-take and run URL<<public_ip>>:<<8080>>/java-web-app should have application rurring 
+**my compelete script looks like this**
+[Jenkins Docker pipeline script](/JenkinsDocker.groovy)
+## Step 5 Access docker application:
+
+- take and run URL<<public_ip>>:<<8080>>/java-web-app should have application rurring 
+- Application runnig
+```
+http://3.249.96.57:8080/java-web-app/
+```
+
+- Tomcat running
+```
+http://3.249.96.57:8080/
+```
+  ![tomcat running](/images/tomcat.PNG)
