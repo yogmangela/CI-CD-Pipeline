@@ -190,9 +190,12 @@ Save and Apply >> Build job
 ```
 http://3.249.96.57:8080/java-web-app/
 ```
+![Docker application running](images/docker.PNG)
+
 
 - Tomcat running
 ```
 http://3.249.96.57:8080/
 ```
-  ![tomcat running](/images/tomcat.PNG)
+
+![tomcat running](images/tomcat.PNG)
