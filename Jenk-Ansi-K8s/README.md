@@ -1,10 +1,16 @@
 # CI/CD Project using Jenkins,Ansible,Docker ans K8's
 
-## Steps1: install Ansible
+## Steps1: install [Ansible](https://github.com/yogmangela/Ansible/tree/master/Installation)
 
-## Steps2: install Jenkins
+## Steps2: install [Jenkins](https://github.com/yogmangela/jenkins)
 
 ## Steps3: install Docker
+
+```
+curl -fsSL get.docker.com | /bin/bash
+sudo usermod -aG docker jenkins
+sudo systemctl restart jenkins
+```
 
 ## Steps4: install K8's
 ### Steps4.1: Create and Ubuntu Instance and follow execute below command
